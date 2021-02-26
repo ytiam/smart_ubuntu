@@ -5,4 +5,5 @@ echo 'alias pid_airflow="lsof -i"' >> ~/.bashrc
 echo 'alias pi="pip install"' >>  ~/.bashrc
 echo 'alias p2="python2"' >> ~/.bashrc
 echo 'alias p3="python3"' >> ~/.bashrc
-echo 'alias jn="jupyter notebook --no-browser"' >> ~/.bashrc
+echo 'alias jn="jupyter notebook --no-browser &> /dev/null &"' >> ~/.bashrc
+echo 'alias jl="jupyter notebook list"' >> ~/.bashrc
