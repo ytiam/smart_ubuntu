@@ -1,0 +1,12 @@
+For Centralised Access of the Google Drive from multiple systems like own system, docker containers etc, steps:
+1- Follow the tutorial here, https://www.inanalyticsai.com/post/omg-i-am-just-left-with-a-few-more-gbs-on-my-hard-disk-what-to-do 
+2- Before mounting the gdrive to folder,
+----a] do 'vim /etc/fuse.conf'
+----b] uncomment the line, 'user_allow_other'
+----c] save the file
+3- Now mount the drive running, 'google-drive-ocamlfuse ~/ytiam_g_drive -o allow_root'
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+## Mount gdrive and other directories to container (google_drive local machine mounting folder point: /home/atanu/ytiam_g_drive, external hard disk local machine mount point: /media/atanu/) ##
+sudo docker run -d -it --gpus all --network host -v /home/atanu/ytiam_g_drive:/shared-volume -v /media/atanu/:/shared-volume-1 --name transformer_pytorch_gpu huggingface/transformers-pytorch-gpu:latest
