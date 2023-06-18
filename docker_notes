@@ -1,0 +1,107 @@
+https://docs.docker.com/engine/install/ubuntu/
+
+How to check Ubuntu version from cli: cat /etc/*release
+
+check nvidia version: nvidia-smi or lspci -nn | grep '\[03'
+
+https://askubuntu.com/questions/524242/how-to-find-out-which-nvidia-gpu-i-have
+
+
+https://www.cyberciti.biz/faq/ubuntu-linux-install-nvidia-driver-latest-proprietary-driver/
+
+
+docker commands:
+
+> to see all the images downloaded: sudo docker images
+> to see all the list of containers: sudo docker container ls -a
+> to see all the running containers: sudo docker ps
+> to remove all the stopped containers: sudo docker prune
+> to run a container: docker start <container_id>
+> to stop a container: docker stop <container_id>
+> to attach a terminal to a container that is running: docker attach <container_id> 
+  link: https://www.slashroot.in/how-run-docker-container
+
+docker create image from container:
+> docker login --username=ytiam20 --password=01928374#aM
+> docker commit <container_name>
+> docker tag <container_id> <docker_hub_username>/<image_name_we_want_to_give>:<tag>
+> docker push <docker_hub_username>/<image_name_we_want_to_give>
+
+docker save image as .tar file:
+> docker save <image_name> > <file.tar>
+
+docker save container as .tar file:
+> docker export <container_name/id> > </path/file.tar>
+
+#details: https://dockerlabs.collabnix.com/beginners/saving-images-as-tar/
+
+docker load image from .tar file:
+> docker load < <file.tar>
+
+docker stop and detach from container:
+> Ctrl + D
+
+docker detach from container without stopping it:
+> Ctrl+P and then Ctrl+Q
+
+## Helpful links: 
+- https://www.edureka.co/community/18657/what-is-the-difference-between-a-docker-image-and-container
+- https://forums.docker.com/t/swiching-between-root-and-non-root-users-from-interactive-console/2269
+- https://www.freecodecamp.org/news/docker-image-guide-how-to-remove-and-delete-docker-images-stop-containers-and-remove-all-volumes/
+- https://www.scalyr.com/blog/create-docker-image/
+- https://ropenscilabs.github.io/r-docker-tutorial/04-Dockerhub.html
+- https://www.tecmint.com/name-docker-containers/
+
+
+
+***
+Docker change image storing paths:
+	- sudo systemctl stop docker
+	- sudo vim /etc/docker/daemon.json
+		- add {
+  			"graph":"__your_path__"
+			}
+		- save
+	- sudo systemctl start docker
+
+
+sudo docker run -it -p 8080:8080 -v ~/data:/home/atanum/Ayata/pacesetter/pacesetter/data/raw --name ayata_container ytiam20/ubuntu20.04_essentials:latest bash
+
+sudo docker run -it -p 8888:8888 -p 8080:8080 -p 8081:8081 -p 8082:8082 -p 8083:8083 -p 8084:8084 -v ~/data:/home/ayata_users/Ayata/pacesetter/pacesetter/data/raw --name ayata_dev_container ytiam20/ubuntu20.04_dev_essentials:latest bash
+
+sudo docker run -it -p 8080:8080 --name ayata_container ytiam20/ubuntu20.04_essentials:latest bash
+
+*** use '-d' after "docker run" while creating the container, if you want to let your container run in detach mode.
+
+
+Updated>>>>>
+
+step-1) sudo docker run -d -it --network host --user ayata_users -v ~/data:/home/ayata_users/Ayata/pacesetter/pacesetter/data/raw --name ayata_dev_container2 ytiam20/ubuntu20.04_dev_essential:start-script bash
+
+step-2) sudo docker exec ayata_dev_container2 bash -c "bash start.sh"
+
+step-3) go inside the container and check the jupyter notebook port and token
+
+
+
+------------------------------------------------------------------------------------------------
+to execute command in container from outside container:
+> sudo docker exec ayata_dev_container2 bash -c "cd home/ayata_users;source anaconda3/etc/profile.d/conda.sh;conda deactivate;conda activate Ayata/pacesetter/;jupyter notebook --ip=0.0.0.0 --no-browser --allow-root &> /dev/null &"
+
+or
+> sudo docker exec ayata_dev_container2 bash -c "bash start.sh"
+where start.sh contains
+	>cd home/ayata_users/
+	>source anaconda3/etc/profile.d/conda.sh
+	>conda deactivate
+	>conda activate Ayata/pacesetter
+	>jupyter notebook --ip=0.0.0.0 --no-browser --allow-root &> /dev/null &
+and start.sh is inside root folder
+
+Note: if conda environment not found error comes, take help from https://github.com/conda/conda/issues/7980
+
+to run a docker container as an user other than root: https://stackoverflow.com/questions/35734474/connect-to-docker-container-as-user-other-than-root
+
+
+to publish all the port of a container to host: use --network host while creating the container i.e. while docker run
+
