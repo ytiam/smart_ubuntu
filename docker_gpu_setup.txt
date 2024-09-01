@@ -1,0 +1,132 @@
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+
+1) Update nvidia driver: sudo apt-get install --no-install-recommends nvidia-driver-430
+
+
+
+2) Reboot system: sudo reboot
+
+
+
+3) Install NVIDIA Container Toolkit:
+# Add the package repositories
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+
+
+
+sudo apt-get update
+sudo apt-get install -y nvidia-container-toolkit
+sudo systemctl restart docker
+
+
+
+** The NVIDIA Container Toolkit allows users to build and run GPU accelerated Docker containers. (git: https://github.com/NVIDIA/nvidia-docker)
+
+
+
+4) ## Copy a docker image and run (step by step process of how to enable tensorflow-gpu)
+a) sudo docker run --gpus all -it -p 8888:8888 tensorflow/tensorflow:latest-devel-gpu-py3 bash <- will take you inside the container (the port needs to be exposed while creating a container. link: https://forums.docker.com/t/how-to-expose-port-on-running-container/3252)
+
+
+
+b) pip install notebook
+
+
+
+c) check for nvidia-smi. If Cuda Version = ERR!
+
+
+
+3.a) *** (mentioned below)
+
+
+
+4) pip install tensorflow-gpu
+
+
+
+5) jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root --no-browser &> /dev/null &
+
+
+
+
+
+*** if nvidia-smi command run, shows CUDA Version: ERR!, do following:
+> check for echo $LD_LIBRARY_PATH
+> Check for a path to :/path/to/nvidia/library/stubs: if exists in the string
+> remove the above portion from the string and export it
+
+
+
+> e.g if root@6067006e61c5:/# echo $LD_LIBRARY_PATH
+/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/usr/local/cuda/lib64/stubs:
+-----------------------------------------------------------------------------------------------------
+run: export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda/lib64:
+
+
+
+
+-----------------------------------------------------------------------------------
+> to check tensorflow is using gpu: tf.test.is_gpu_available(cuda_only=False, min_cuda_compute_capability=None) or tf.config.list_physical_devices('GPU')
+
+
+
+
+
+#### Other links:
+- https://www.tensorflow.org/install/gpu
+- https://www.tensorflow.org/install/docker
+
+
+
+
+------------------------------------------------------------------------------------
+
+
+
+Container ID: 2ea3cfd62ca6
+
+
+
+https://www.scalyr.com/blog/create-docker-image/
+
+
+
+
+
+How to push a docker container to docker hub repo:
+
+
+
+1) sudo docker login or [sudo docker login -u "myusername" -p "mypassword" docker.io]
+2) sudo docker commit <container_id>
+3) Check the docker image corresponding to the commited container_id, by running sudo docker images
+4) sudo docker tag <container_new_image_id_from_point_3> <my_docker_id>/<repo_name>:tag
+5) sudo docker push <my_docker_id>/<repo_name>:tag
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Docker image save as .tar file:
+
+docker save -o <path for generated tar file> <image name>
+
+like: docker save -o c:/myfile.tar centos:16
+
+Then copy your image to a new system with regular file transfer tools such as cp, scp or rsync(preferred for big files). After that you will have to load the image into Docker:
+
+docker load -i <path to image tar file>
+
+-------------------------------------------------------------------------------------
+
+
+
+Temporary: ps -ef | grep -i python (to check background running python scripts)
+
+
+-------------------------------------------------------------------------------------
+
+Office GPU Tensorflow Container Creation: 
+ sudo docker run -it --gpus all -d -p 8888:8888 -p 8889:8889 --name tf_gpu ytiam20/tf-gpu:keras-scripts bash

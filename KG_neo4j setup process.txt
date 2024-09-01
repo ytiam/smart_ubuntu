@@ -1,0 +1,22 @@
+KG Server:  ssh -i KG-code-base_key.pem -L 8888:localhost:8890 azureuser@20.65.209.148
+
+To get jupyter notebook on browser: localhost:8888
+---------------------------------------------------------------------------------------
+
+Neo4j Server: ssh -i neo4j-server_key_cg.pem -L 7474:localhost:7474 azureuser@20.65.162.119
+
+Open Neo4j server in browser: localhost:7474, database connectivity: 20.65.162.119:7687, username- neo4j, pwd - cypher
+
+---------------------------------------------------------------------------------------
+
+neo4j container run command: 
+ sudo docker run -d -it --publish=7475:7474 --publish=7688:7687 neo4j
+
+kgcontainer run command:
+ sudo docker run -d -it -p 8890:8888 -p 7476:7474 -p 7689:7687 --name kgcontainer_atanu aadiharan99/kgcontainer:version1 bash
+
+
+---------------------------------------------------------------------------------------
+cd GIT/knowledge-graph/
+
+python main.py --api_key <openai_api_key> --prompt 'What is the relation between Narendra Modi and Rashtriya Swayamsevak Sangh'
